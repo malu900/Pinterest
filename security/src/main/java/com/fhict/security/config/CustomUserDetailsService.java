@@ -1,8 +1,8 @@
-//package com.fhict.service;
+//package com.fhict.security.config;
 //
 //import com.fhict.dao.UserRepository;
 //import com.fhict.model.User;
-//import com.sun.security.auth.UserPrincipal;
+//import com.fhict.service.UserPrincipal;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.core.userdetails.UserDetails;
 //import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,11 +11,10 @@
 //import org.springframework.transaction.annotation.Transactional;
 //
 //@Service
-//public class UserService implements UserDetailsService {
+//public class CustomUserDetailsService implements UserDetailsService {
 //
 //    @Autowired
 //    UserRepository userRepository;
-//    UserPrincipal
 //
 //    @Override
 //    @Transactional
@@ -27,7 +26,7 @@
 //                        new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
 //                );
 //
-//        return
+//        return UserPrincipal.create(user);
 //    }
 //
 //    // This method is used by JWTAuthenticationFilter

@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @ComponentScan(basePackages = {"com.fhict.*"})
 @EntityScan(basePackages = {"com.fhict.*"})
 @EnableJpaRepositories(basePackages = {"com.fhict.*"})
-@EnableWebSecurity
 public class PinterestApplication {
     public static void main(String[] args) {
         SpringApplication.run(PinterestApplication.class, args);
