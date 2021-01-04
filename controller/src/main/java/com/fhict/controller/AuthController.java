@@ -62,7 +62,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     // ResponseEntity represents the whole HTTP response: status code, headers, and body.
-    // Because of it, we can use it to fully configure the HTTP response.
+    // Because  we can use it to fully configure the HTTP response.
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if(userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),

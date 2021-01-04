@@ -7,7 +7,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 //@Data
@@ -19,7 +21,7 @@ import java.util.Set;
                 "username"
         })
 })
-public class User {
+public class User extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,10 +45,22 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Collection> collections = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
+    public List<Collection> getCollections() {
+        return collections;
+    }
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
     public User() {
 
     }
-
     public User(String name, String username, String email, String password) {
         this.name = name;
         this.username = username;
@@ -100,5 +114,53 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public void setCollections(List<Collection> collections) {
+        this.collections = collections;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
+    }
+    public void addCollection(Collection collection) {
+        collections.add(collection);
+        collection.setUser(this);
+    }
+
+    public void removeCollection(Collection collection) {
+        collections.add(collection);
+        collection.setUser(this);
+    }
+    public void addLike(Like like) {
+        likes.add(like);
+        like.setUser(this);
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setUser(this);
+    }
+
+    public void removeLike(Like like) {
+        likes.remove(like);
+        like.setUser(null);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setUser(null);
     }
 }
