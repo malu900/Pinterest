@@ -72,9 +72,22 @@ public class Collection {
     public void setUser(User user) {
         this.user = user;
     }
+
     public void addUser(User user) {
         this.user = user;
         user.addCollection(this);
+    }
+    public void removeUser(User user) {
+        this.user = null;
+        user.removeCollection(this);
+    }
+    public void addUsers(User user) {
+        this.users.add(user);
+        user.addCollection(this);
+    }
+    public void removeUsers(User user) {
+        this.users = null;
+        user.removeCollection(this);
     }
     public void addImage(Image image) {
         images.add(image);

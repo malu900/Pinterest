@@ -148,7 +148,7 @@ public class User extends DateAudit{
 
     public void removeCollection(Collection collection) {
         collections.remove(collection);
-        collection.setUser(this);
+//        collection.removeUser(this);
     }
     public void addLike(Like like) {
         likes.add(like);

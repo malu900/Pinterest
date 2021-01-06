@@ -6,6 +6,7 @@ import com.fhict.model.Collection;
 import com.fhict.model.User;
 import com.fhict.service.payload.CollectionRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +33,20 @@ public class UserService {
         collection.addUser(usermodel);
 
         return collectionRepository.save(collection);
+    }
+//    @Transactional
+    public void removeCollection(UserPrincipal creator, Long id) {
+        try {
+            Optional<Collection> collection = collectionRepository.findById(id);
+            Collection collection1 = collection.get();
+            Optional<User> user = userRepository.findById(creator.getId());
+            User usermodel = user.get();
+            collection1.removeUsers(usermodel);
+            usermodel.removeCollection(collection1);
+            collectionRepository.deleteById(id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
