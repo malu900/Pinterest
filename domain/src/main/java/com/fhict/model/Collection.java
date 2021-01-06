@@ -1,9 +1,7 @@
 package com.fhict.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.*;
@@ -16,13 +14,32 @@ public class Collection {
     private Long id;
     @NotNull
     private String collectionname;
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_collections",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "collection_id") })
+    private Set<User> users = new HashSet<>();
+
     @ManyToOne
-    @NotNull
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "collection", orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Image> images = new ArrayList<>();
+    @OneToMany(mappedBy = "collection",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
+    )
+    private Set<Image> images = new HashSet<>();
+
+    public Collection(String collectionname){
+        this.collectionname = collectionname;
+    }
+
+    public Collection() {
+
+    }
 
     public String getCollectionname() {
         return collectionname;
@@ -32,19 +49,11 @@ public class Collection {
         this.collectionname = collectionname;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Image> getImages() {
+    public Set<Image> getImages() {
         return images;
     }
 
-    public void setImages(List<Image> images) {
+    public void setImages(Set<Image> images) {
         this.images = images;
     }
 
@@ -56,6 +65,17 @@ public class Collection {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+    public void addUser(User user) {
+        this.user = user;
+        user.addCollection(this);
+    }
     public void addImage(Image image) {
         images.add(image);
         image.setCollection(this);
@@ -66,16 +86,37 @@ public class Collection {
         image.setCollection(this);
     }
 
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    //    public Set<User> getUsers() {
+//        return users;
+//    }
+//    public void setUser(User user) {
+//        user.addCollection(this);
+//        this.users.add(user);
+//    }
+//    public void removeUser(User user) {
+//        this.users.remove(user);
+//    }
+//    public void setUsers(Set<User> users) {
+//        this.users = users;
+//    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Collection that = (Collection) o;
-        return id.equals(that.id) && collectionname.equals(that.collectionname) && user.equals(that.user);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, collectionname, user);
+        return Objects.hash(id);
     }
 }

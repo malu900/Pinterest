@@ -3,12 +3,14 @@ package com.fhict.model;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
-//@Table(name = "images")
+@Table(name = "images", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "collection_id"
+        })
+})
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,16 +19,23 @@ public class Image {
     @NotNull
     private String imageName;
 
-    @ManyToOne
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "collection_id")
     private Collection collection;
 
-    @OneToMany(mappedBy = "image", orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "image",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
+    )
+    private Set<Comment> comments = new HashSet<>();
 
-    @OneToMany(mappedBy = "image", orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
+    @OneToMany(mappedBy = "image",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
+    )
+    private Set<Like> likes = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -52,19 +61,19 @@ public class Image {
         this.collection = collection;
     }
 
-    public List<Comment> getComments() {
+    public Set<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
 
-    public List<Like> getLikes() {
+    public Set<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<Like> likes) {
+    public void setLikes(Set<Like> likes) {
         this.likes = likes;
     }
 

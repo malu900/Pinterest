@@ -1,5 +1,6 @@
 package com.fhict.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import org.hibernate.annotations.NaturalId;
 
@@ -18,7 +19,7 @@ import java.util.Set;
 @Entity
 @Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
-                "username"
+                "username",
         })
 })
 public class User extends DateAudit{
@@ -45,18 +46,18 @@ public class User extends DateAudit{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Collection> collections = new ArrayList<>();
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_collections",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "collection_id") })
+    private Set<Collection> collections = new HashSet<>();
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
-
-    public List<Collection> getCollections() {
-        return collections;
-    }
+    private Set<Comment> comments = new HashSet<>();
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
+    private Set<Like> likes = new HashSet<>();
 
     public User() {
 
@@ -116,32 +117,37 @@ public class User extends DateAudit{
         this.roles = roles;
     }
 
-    public void setCollections(List<Collection> collections) {
+    public void setCollections(Set<Collection> collections) {
         this.collections = collections;
     }
 
-    public List<Comment> getComments() {
+    public Set<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
 
-    public List<Like> getLikes() {
+    public Set<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<Like> likes) {
+    public void setLikes(Set<Like> likes) {
         this.likes = likes;
     }
+
+    public Set<Collection> getCollections() {
+        return collections;
+    }
+
     public void addCollection(Collection collection) {
         collections.add(collection);
         collection.setUser(this);
     }
 
     public void removeCollection(Collection collection) {
-        collections.add(collection);
+        collections.remove(collection);
         collection.setUser(this);
     }
     public void addLike(Like like) {

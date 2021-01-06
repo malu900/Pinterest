@@ -6,18 +6,22 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comments", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "user_id",
+                "image_id"
+        })
+})
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String text;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image image;
 

@@ -1,4 +1,4 @@
-package com.fhict.controller.payload;
+package com.fhict.service.payload;
 
 
 import com.sun.istack.NotNull;

@@ -1,17 +1,16 @@
 package com.fhict.controller;
 
 import com.fhict.controller.exception.AppException;
-import com.fhict.controller.payload.ApiResponse;
-import com.fhict.controller.payload.JwtAuthenticationResponse;
-import com.fhict.controller.payload.LoginRequest;
-import com.fhict.controller.payload.SignUpRequest;
+import com.fhict.service.payload.ApiResponse;
+import com.fhict.service.payload.JwtAuthenticationResponse;
+import com.fhict.service.payload.LoginRequest;
+import com.fhict.service.payload.SignUpRequest;
 import com.fhict.dao.RoleRepository;
 import com.fhict.dao.UserRepository;
 import com.fhict.model.Role;
 import com.fhict.model.RoleName;
 import com.fhict.model.User;
 import com.fhict.security.config.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,34 +18,35 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    JwtTokenProvider tokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
+
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+    }
+//    @GetMapping("/user/me")
+//    @PreAuthorize("hasRole('USER')")
+//    UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser);
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+    @ResponseStatus(HttpStatus.OK)
+    public JwtAuthenticationResponse AuthenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsernameOrEmail(),
@@ -57,8 +57,22 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        return new JwtAuthenticationResponse(jwt);
     }
+
+//    public ResponseEntity<?> AuthenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        loginRequest.getUsernameOrEmail(),
+//                        loginRequest.getPassword()
+//                )
+//        );
+//
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        String jwt = tokenProvider.generateToken(authentication);
+//        return new ResponseEntity<>(jwt, HttpStatus.OK);
+//    }
 
     @PostMapping("/signup")
     // ResponseEntity represents the whole HTTP response: status code, headers, and body.
@@ -85,11 +99,14 @@ public class AuthController {
         user.setRoles(Collections.singleton(userRole));
 
         User result = userRepository.save(user);
+//        String res =  result != null ? "User registered successfully" : "Not registered";
+        return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
         //change custom path
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/users/{username}")
-                .buildAndExpand(result.getUsername()).toUri();
-
-        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentContextPath().path("/api/users/{username}")
+//                .buildAndExpand(result.getUsername()).toUri();
+//
+//
+//        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
     }
 }

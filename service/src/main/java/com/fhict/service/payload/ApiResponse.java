@@ -1,4 +1,4 @@
-package com.fhict.controller.payload;
+package com.fhict.service.payload;
 
 public class ApiResponse {
     private Boolean success;

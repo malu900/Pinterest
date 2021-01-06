@@ -6,17 +6,22 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "likes")
+@Table(name = "likes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "user_id",
+                "image_id"
+        })
+})
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Image image;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public Like(Image image, User user) {
         this.image = image;
@@ -58,6 +63,5 @@ public class Like {
     public int hashCode() {
         return Objects.hash(id, image, user);
     }
-
 
 }
