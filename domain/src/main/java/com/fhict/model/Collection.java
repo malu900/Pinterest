@@ -15,6 +15,10 @@ public class Collection {
     @NotNull
     private String collectionname;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private CollectionImage collectionImage;
+
+
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_collections",
@@ -35,11 +39,10 @@ public class Collection {
 
     public Collection(String collectionname){
         this.collectionname = collectionname;
+//       this.collectionImage = collectionImage;
     }
 
-    public Collection() {
-
-    }
+    public Collection() { }
 
     public String getCollectionname() {
         return collectionname;
@@ -71,6 +74,13 @@ public class Collection {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void addCollectionImage(CollectionImage collectionImage) {
+        this.collectionImage = collectionImage;
+    }
+    public void removeCollectionImage(CollectionImage collectionImage){
+        this.collectionImage = null;
     }
 
     public void addUser(User user) {
@@ -105,6 +115,14 @@ public class Collection {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public CollectionImage getCollectionImage() {
+        return collectionImage;
+    }
+
+    public void setCollectionImage(CollectionImage collectionImage) {
+        this.collectionImage = collectionImage;
     }
 
     //    public Set<User> getUsers() {

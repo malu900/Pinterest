@@ -77,7 +77,7 @@ public class AuthController {
     @PostMapping("/signup")
     // ResponseEntity represents the whole HTTP response: status code, headers, and body.
     // Because  we can use it to fully configure the HTTP response.
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if(userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -99,14 +99,6 @@ public class AuthController {
         user.setRoles(Collections.singleton(userRole));
 
         User result = userRepository.save(user);
-//        String res =  result != null ? "User registered successfully" : "Not registered";
-        return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
-        //change custom path
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentContextPath().path("/api/users/{username}")
-//                .buildAndExpand(result.getUsername()).toUri();
-//
-//
-//        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+        return new ResponseEntity<User>(result, HttpStatus.OK);
     }
 }
