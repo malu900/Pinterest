@@ -17,12 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import javax.print.attribute.standard.Media;
-import java.io.InputStream;
-import java.util.Optional;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/collections")
@@ -35,9 +31,9 @@ public class CollectionController {
         this.collectionService = collectionService;
     }
 
-
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createCollection(@CurrentUser UserPrincipal currentUser, @RequestParam("collectionName") String collectionRequest, @RequestParam("file") MultipartFile file) {
         Collection collection = null;
@@ -60,36 +56,50 @@ public class CollectionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllCollectionsFromUser(@CurrentUser UserPrincipal currentUser) {
+        List<Collection> collection = new ArrayList<>();
+        try{
+            collection.addAll(userService.getAllCollectionsFromUser(currentUser));
+//            collection = userService.getAllCollectionsFromUser(currentUser);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(collection, HttpStatus.OK);
+    }
 
+    @RequestMapping(value = "/{collectionId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getCollectionByUserIdAndCollectionId(@CurrentUser UserPrincipal currentUser, @PathVariable  Long collectionId) {
+        Collection collection = null;
+        try{
+            collection = userService.getCollectionByIdAndUserId(currentUser, collectionId);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(collection, HttpStatus.OK);
+    }
 
-//    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<HttpStatus> removeCollection(@CurrentUser  UserPrincipal currentUser, @PathVariable("id") long id) {
+//    @GetMapping("/downloadFile/{fileName:.+}")
+//    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+//        // Load file as Resource
+//        Resource resource = fileStorageService.loadFileAsResource(fileName);
+//
+//        // Try to determine file's content type
+//        String contentType = null;
 //        try {
-//            collectionService.removeCollection(currentUser, id);
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+//        } catch (IOException ex) {
+//            logger.info("Could not determine file type.");
 //        }
-//    }
-//    private static final Logger logger = Logger.getLogger(PinterestApplication.class.getName());
-//    @PostMapping("/upload")
-//    public ResponseEntity<String> uploadData(@RequestParam("file") MultipartFile file) throws Exception {
-//        if (file == null) {
-//            throw new RuntimeException("You must select the a file for uploading");
+//
+//        // Fallback to the default content type if type could not be determined
+//        if(contentType == null) {
+//            contentType = "application/octet-stream";
 //        }
-//        InputStream inputStream = file.getInputStream();
-//        String originalName = file.getOriginalFilename();
-//        String name = file.getName();
-//        String contentType = file.getContentType();
-//        long size = file.getSize();
-//        logger.info("inputStream: " + inputStream);
-//        logger.info("originalName: " + originalName);
-//        logger.info("name: " + name);
-//        logger.info("contentType: " + contentType);
-//        logger.info("size: " + size);
-//        // Do processing with uploaded file data in Service layer
-//        return new ResponseEntity<String>(originalName, HttpStatus.OK);
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(contentType))
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+//                .body(resource);
 //    }
-
 }

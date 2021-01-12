@@ -1,6 +1,5 @@
 package com.fhict.dao;
 
-import com.fhict.model.Collection;
 import com.fhict.model.CollectionImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

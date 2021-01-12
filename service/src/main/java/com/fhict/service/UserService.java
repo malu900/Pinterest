@@ -28,9 +28,16 @@ public class UserService {
         this.collectionImageRepository = collectionImageRepository;
     }
 
-    public List<Collection> getAllCollectionsFromUser(String username) {
-        List<Collection> collections = collectionRepository.getCollectionsFromUser(username);
+    public List<Collection> getAllCollectionsFromUser(UserPrincipal currentUser) {
+        System.out.println(currentUser.getId());
+        List<Collection> collections = collectionRepository.getCollectionsFromUser(currentUser.getId());
         return collections;
+    }
+
+    public Collection getCollectionByIdAndUserId(UserPrincipal currentUser, Long collectionId) {
+        Optional<Collection> collection = collectionRepository.findCollectionByIdAndUserId(currentUser.getId(), collectionId);
+        Collection coll = collection.get();
+        return coll;
     }
 
     public Collection createCollection(UserPrincipal creator, String  collectionRequest, MultipartFile file) {
@@ -41,7 +48,6 @@ public class UserService {
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         try {
-            // Check if the file's name contains invalid characters
             if(fileName.contains("..")) {
                 throw new Exception("Sorry! Filename contains invalid path sequence ");
             }

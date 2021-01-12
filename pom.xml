@@ -9,7 +9,6 @@
         <module>repository</module>
         <module>controller</module>
         <module>security</module>
-        <module>UserPrincipal</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

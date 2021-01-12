@@ -1,5 +1,6 @@
 package com.fhict.dao;
 
+
 import com.fhict.model.Collection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,9 @@ import java.util.Optional;
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
     Optional<Collection> findCollectionById(Long collectionId);
     List<Collection> findCollectionByIdIn(List<Long> collectionId);
-    @Query("SELECT u.collections FROM User u where u.username = :userName")
-    List<Collection> getCollectionsFromUser(@Param("userName") String userName);
+//    @Query("SELECT u.collections FROM User u where u.username = :userName")
+    @Query("SELECT c FROM Collection c where c.user.id = :id")
+    List<Collection> getCollectionsFromUser(Long id);
+    @Query("select c from Collection c where c.user.id = :id and c.id = :collectionId")
+    Optional<Collection> findCollectionByIdAndUserId(Long id, Long collectionId);
 }
